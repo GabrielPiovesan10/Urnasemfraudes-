@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urna Eletrônica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+
+        .urna-container {
+            background-color: #dbd5c9;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .teclado-container {
+            background-color: #2b2b2b;
+        }
+        
+        .tela-container {
+            background-color: #f4f6f0;
+            box-shadow: inset 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        .tecla {
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.8), inset 1px 1px 1px rgba(255,255,255,0.2);
+            transition: transform 0.05s, box-shadow 0.05s;
+            cursor: pointer;
+        }
+        
+        .tecla:active {
+            transform: translateY(2px) translateX(1px);
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .tecla-numero {
+            background: linear-gradient(to bottom, #4a4a4a, #1a1a1a);
+            color: white;
+        }
+
+        .tecla-branco {
+            background: linear-gradient(to bottom, #ffffff, #d4d4d4);
+            color: black;
+        }
+
+        .tecla-corrige {
+            background: linear-gradient(to bottom, #f97316, #c2410c);
+            color: black;
+        }
+
+        .tecla-confirma {
+            background: linear-gradient(to bottom, #22c55e, #15803d);
+            color: black;
+        }
+
+        .piscar {
+            animation: piscar-anim 1s step-end infinite;
+        }
+
+        @keyframes piscar-anim {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .fim-texto {
+            font-size: 7rem;
+            font-weight: 900;
+            letter-spacing: 0.2rem;
+            color: #111;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="urna" class="flex flex-col md:flex-row w-full max-w-[900px] mx-2 urna-container p-6 rounded-md border-t border-l border-white/60 border-b-4 border-r-4 border-black/40 gap-8">
+        
+        <!-- Tela -->
+        <div class="flex-1 tela-container border-4 border-gray-400 p-4 md:p-6 flex flex-col justify-between relative h-[450px]">
+            
+            <div id="tela-votacao" class="flex-1 flex flex-col h-full w-full">
+                <div class="flex justify-between h-full">
+                    
+                    <div class="flex-1 flex flex-col pt-2">
+                        <p class="text-base font-bold uppercase mb-4" id="texto-seu-voto">SEU VOTO PARA</p>
+                        <p class="text-3xl font-bold uppercase mb-6 text-center" id="texto-cargo">PRESIDENTE</p>
+                        
+                        <div class="flex items-center gap-2 mb-6" id="area-numero">
+                            <span class="text-xl font-bold">Número:</span>
+                            <div class="flex gap-1">
+                                <div id="digito-0" class="w-10 h-14 border border-black flex items-center justify-center text-4xl font-bold piscar"></div>
+                                <div id="digito-1" class="w-10 h-14 border border-black flex items-center justify-center text-4xl font-bold"></div>
+                            </div>
+                        </div>
+
+                        <div id="info-candidato" class="hidden flex-col gap-2 mt-4">
+                            <p class="text-xl font-bold">Nome: <span id="display-nome" class="font-normal uppercase"></span></p>
+                            <p class="text-xl font-bold">Partido: <span id="display-partido" class="font-normal uppercase"></span></p>
+                        </div>
+                        
+                        <div id="aviso-branco" class="hidden text-3xl font-bold text-center mt-12 uppercase animate-pulse">
+                            VOTO EM BRANCO
+                        </div>
+                    </div>
+                    
+                    <div class="w-32 md:w-40 border border-black bg-white flex-col items-center justify-start hidden self-start h-[220px]" id="container-foto">
+                        <img id="display-foto" src="" alt="" class="w-full h-[190px] object-cover bg-gray-200" onerror="this.src='https://placehold.co/150x200/cccccc/666666?text=Foto'">
+                        <div class="text-[10px] font-bold uppercase border-t border-black w-full text-center py-1 bg-gray-100">PRESIDENTE</div>
+                    </div>
+                </div>
+
+                <div class="border-t-2 border-black pt-2 mt-4 text-[13px] font-bold w-full hidden leading-tight" id="instrucoes">
+                    <p>Aperte a tecla:</p>
+                    <p>VERDE para CONFIRMAR este voto</p>
+                    <p>LARANJA para REINICIAR</p>
+                </div>
+            </div>
+
+            <div id="tela-fim" class="hidden flex-1 flex items-center justify-center h-full">
+                <span class="fim-texto">FIM</span>
+            </div>
+        </div>
+
+        <div class="teclado-container p-6 rounded-md w-full md:w-[320px] flex flex-col gap-6 shadow-inner relative">
+            
+            <div class="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-sm shadow-inner border border-gray-400">
+                <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-serif font-bold text-xl">
+                    BR
+                </div>
+                <div class="text-right flex flex-col justify-center">
+                    <span class="text-black font-black text-lg leading-none tracking-tight">JUSTIÇA</span>
+                    <span class="text-black font-black text-lg leading-none tracking-tight">ELEITORAL</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4 px-4">
+                <button onclick="registrarEntrada('1')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">1</button>
+                <button onclick="registrarEntrada('2')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">2</button>
+                <button onclick="registrarEntrada('3')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">3</button>
+                <button onclick="registrarEntrada('4')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">4</button>
+                <button onclick="registrarEntrada('5')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">5</button>
+                <button onclick="registrarEntrada('6')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">6</button>
+                <button onclick="registrarEntrada('7')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">7</button>
+                <button onclick="registrarEntrada('8')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">8</button>
+                <button onclick="registrarEntrada('9')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">9</button>
+                <div class="col-start-2">
+                    <button onclick="registrarEntrada('0')" class="tecla tecla-numero h-12 w-full rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">0</button>
+                </div>
+            </div>
+
+            <div class="flex justify-between gap-2 mt-2">
+                <button onclick="acaoBranco()" class="tecla tecla-branco h-12 flex-1 rounded text-[11px] font-extrabold uppercase pt-4 text-black">Branco</button>
+                <button onclick="acaoCorrige()" class="tecla tecla-corrige h-12 flex-1 rounded text-[11px] font-extrabold uppercase pt-4 text-black">Corrige</button>
+                <button onclick="acaoConfirma()" class="tecla tecla-confirma h-14 flex-1 rounded text-[12px] font-extrabold uppercase pt-5 -mt-2 text-black">Confirma</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let valorVoto = "";
+        let isBranco = false;
+        let estadoInterface = 0; 
+        let contextoAudio = null;
+
+        const elDigito0 = document.getElementById('digito-0');
+        const elDigito1 = document.getElementById('digito-1');
+        const elAreaNumero = document.getElementById('area-numero');
+        
+        const elInfoCandidato = document.getElementById('info-candidato');
+        const elContainerFoto = document.getElementById('container-foto');
+        const elFoto = document.getElementById('display-foto');
+        
+        const elNome = document.getElementById('display-nome');
+        const elPartido = document.getElementById('display-partido');
+        const elTextoSeuVoto = document.getElementById('texto-seu-voto');
+        
+        const elInstrucoes = document.getElementById('instrucoes');
+        const elAvisoBranco = document.getElementById('aviso-branco');
+        
+        const telaVotacao = document.getElementById('tela-votacao');
+        const telaFim = document.getElementById('tela-fim');
+
+        function prepararAudio() {
+            if (!contextoAudio) {
+                contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (contextoAudio.state === 'suspended') {
+                contextoAudio.resume();
+            }
+        }
+
+        function emitirSinal(frequencia, tipo, duracao, volume) {
+            if (!contextoAudio) return;
+            const oscilador = contextoAudio.createOscillator();
+            const ganho = contextoAudio.createGain();
+            
+            oscilador.type = tipo;
+            oscilador.frequency.setValueAtTime(frequencia, contextoAudio.currentTime);
+            
+            ganho.gain.setValueAtTime(volume, contextoAudio.currentTime);
+            ganho.gain.exponentialRampToValueAtTime(0.001, contextoAudio.currentTime + duracao);
+            
+            oscilador.connect(ganho);
+            ganho.connect(contextoAudio.destination);
+            
+            oscilador.start();
+            oscilador.stop(contextoAudio.currentTime + duracao);
+        }
+
+        function somBotao() {
+            prepararAudio();
+            emitirSinal(900, 'sine', 0.1, 0.2);
+        }
+
+        function somFinalizacao() {
+            prepararAudio();
+            setTimeout(() => emitirSinal(1400, 'square', 0.15, 0.1), 0);
+            setTimeout(() => emitirSinal(1400, 'square', 0.15, 0.1), 300);
+            setTimeout(() => emitirSinal(1400, 'square', 0.8, 0.1), 600);
+        }
+
+        function atualizarVisor() {
+            elDigito0.textContent = valorVoto[0] || "";
+            elDigito1.textContent = valorVoto[1] || "";
+            
+            elDigito0.classList.remove('piscar');
+            elDigito1.classList.remove('piscar');
+
+            if (!isBranco && valorVoto.length < 2) {
+                if (valorVoto.length === 0) elDigito0.classList.add('piscar');
+                if (valorVoto.length === 1) elDigito1.classList.add('piscar');
+            }
+        }
+
+        function carregarDadosCandidato() {
+            elNome.textContent = "LULA INÁCIO";
+            elPartido.textContent = "PT";
+            elFoto.src = "foto-candidato.jpg";
+            
+            elInfoCandidato.classList.remove('hidden');
+            elInfoCandidato.classList.add('flex');
+            elContainerFoto.classList.remove('hidden');
+            elContainerFoto.classList.add('flex');
+            elInstrucoes.classList.remove('hidden');
+        }
+
+        function registrarEntrada(numero) {
+            if (estadoInterface !== 0) return;
+            somBotao();
+
+            if (isBranco) {
+                isBranco = false;
+                elAvisoBranco.classList.add('hidden');
+                elAreaNumero.style.display = 'flex';
+                elTextoSeuVoto.style.visibility = 'visible';
+                elInstrucoes.classList.add('hidden');
+            }
+
+            if (valorVoto.length < 2) {
+                valorVoto += numero;
+                atualizarVisor();
+            }
+
+            if (valorVoto.length === 2) {
+                carregarDadosCandidato();
+            }
+        }
+
+        function acaoBranco() {
+            if (estadoInterface !== 0) return;
+            somBotao();
+            
+            valorVoto = "";
+            isBranco = true;
+            
+            elInfoCandidato.classList.add('hidden');
+            elInfoCandidato.classList.remove('flex');
+            elContainerFoto.classList.add('hidden');
+            elContainerFoto.classList.remove('flex');
+            
+            elAreaNumero.style.display = 'none';
+            elTextoSeuVoto.style.visibility = 'visible';
+            
+            elAvisoBranco.classList.remove('hidden');
+            elInstrucoes.classList.remove('hidden');
+            
+            atualizarVisor();
+        }
+
+        function acaoCorrige() {
+            if (estadoInterface !== 0) return;
+            somBotao();
+            
+            valorVoto = "";
+            isBranco = false;
+            
+            elInfoCandidato.classList.add('hidden');
+            elInfoCandidato.classList.remove('flex');
+            elContainerFoto.classList.add('hidden');
+            elContainerFoto.classList.remove('flex');
+            
+            elAvisoBranco.classList.add('hidden');
+            elAreaNumero.style.display = 'flex';
+            elTextoSeuVoto.style.visibility = 'visible';
+            elInstrucoes.classList.add('hidden');
+            
+            atualizarVisor();
+        }
+
+        function acaoConfirma() {
+            if (estadoInterface !== 0) return;
+            
+            if (valorVoto.length === 2 || isBranco) {
+                somFinalizacao();
+                estadoInterface = 1;
+                
+                telaVotacao.classList.add('hidden');
+                telaVotacao.classList.remove('flex');
+                telaFim.classList.remove('hidden');
+                telaFim.classList.add('flex');
+            } else {
+                somBotao();
+            }
+        }
+    </script>
+</body>
+</html>
