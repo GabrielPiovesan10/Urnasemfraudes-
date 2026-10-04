@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Urna Eletrônica</title>
+    <title>Justiça Eleitoral - Teste de Integridade da Urna Eletrônica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;0,900;1,400&display=swap');
 
         body {
             font-family: 'Roboto', sans-serif;
-            background-color: #e0e0e0;
+            background-color: #1a202c;
             margin: 0;
             min-height: 100vh;
             display: flex;
@@ -19,160 +19,225 @@
             user-select: none;
         }
 
-        .urna-container {
-            background-color: #dbd5c9;
-            box-shadow: 10px 10px 30px rgba(0,0,0,0.3);
+        /* Texturas e Cores do Gabinete da Urna */
+        .gabinete-urna {
+            background-color: #dcd7cb;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 2px 2px 4px rgba(255, 255, 255, 0.8);
         }
         
-        .teclado-container {
-            background-color: #2b2b2b;
+        .painel-teclado {
+            background-color: #242424;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
         }
         
-        .tela-container {
-            background-color: #f4f6f0;
-            box-shadow: inset 0px 0px 10px rgba(0,0,0,0.1);
+        .moldura-lcd {
+            background-color: #f1f4ec;
+            box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.25), 0 0 0 2px #a0aec0;
         }
 
-        .tecla {
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.8), inset 1px 1px 1px rgba(255,255,255,0.2);
-            transition: transform 0.05s, box-shadow 0.05s;
+        /* Botões Tactéis */
+        .tecla-fisica {
+            box-shadow: 0 5px 0 #111111, 0 8px 10px rgba(0, 0, 0, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.25);
+            transition: all 0.05s ease;
             cursor: pointer;
         }
         
-        .tecla:active {
-            transform: translateY(2px) translateX(1px);
-            box-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        .tecla-fisica:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #111111, 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         .tecla-numero {
-            background: linear-gradient(to bottom, #4a4a4a, #1a1a1a);
-            color: white;
+            background: linear-gradient(180deg, #444444 0%, #1c1c1c 100%);
+            color: #ffffff;
         }
 
         .tecla-branco {
-            background: linear-gradient(to bottom, #ffffff, #d4d4d4);
-            color: black;
+            background: linear-gradient(180deg, #ffffff 0%, #d6d6d6 100%);
+            color: #000000;
         }
 
         .tecla-corrige {
-            background: linear-gradient(to bottom, #f97316, #c2410c);
-            color: black;
+            background: linear-gradient(180deg, #ff7a1a 0%, #d04900 100%);
+            color: #000000;
         }
 
         .tecla-confirma {
-            background: linear-gradient(to bottom, #22c55e, #15803d);
-            color: black;
+            background: linear-gradient(180deg, #28d060 0%, #0f8b39 100%);
+            color: #000000;
+            box-shadow: 0 5px 0 #084d1f, 0 8px 10px rgba(0, 0, 0, 0.6), inset 1px 1px 2px rgba(255, 255, 255, 0.3);
         }
 
-        .piscar {
-            animation: piscar-anim 1s step-end infinite;
+        .tecla-confirma:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #084d1f, 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        @keyframes piscar-anim {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+        /* Animações e Visor */
+        .cursor-pisca {
+            animation: piscar-cursor 0.8s step-end infinite;
         }
 
-        .fim-texto {
-            font-size: 7rem;
+        @keyframes piscar-cursor {
+            0%, 100% { opacity: 1; border-color: #000; }
+            50% { opacity: 0; border-color: transparent; }
+        }
+
+        .texto-fim-urna {
+            font-size: 6.5rem;
             font-weight: 900;
-            letter-spacing: 0.2rem;
+            letter-spacing: 0.3rem;
             color: #111;
         }
     </style>
 </head>
-<body>
+<body class="p-2 sm:p-4">
 
-    <div id="urna" class="flex flex-col md:flex-row w-full max-w-[900px] mx-2 urna-container p-6 rounded-md border-t border-l border-white/60 border-b-4 border-r-4 border-black/40 gap-8">
+    <!-- Modal de Inviolabilidade / Auditabilidade -->
+    <div id="modal-auditoria" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full border-t-8 border-yellow-500 p-6 md:p-8 text-gray-800">
+            <!-- Cabecalho Oficial -->
+            <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                <div class="w-14 h-14 bg-blue-900 rounded-full flex-shrink-0 flex items-center justify-center text-yellow-400 font-bold text-xl shadow-md border-2 border-yellow-400">
+                    JE
+                </div>
+                <div>
+                    <h2 class="text-xs font-bold text-blue-900 tracking-wider uppercase">JUSTIÇA ELEITORAL BRASILEIRA</h2>
+                    <h1 class="text-lg md:text-xl font-black text-gray-900 uppercase leading-tight">Programa de Auditoria e Teste de Integridade Pública</h1>
+                </div>
+            </div>
+
+            <!-- Conteudo Institucional -->
+            <div class="space-y-4 text-sm md:text-base text-gray-700 leading-relaxed">
+                <div class="p-3 bg-blue-50 border-l-4 border-blue-800 rounded text-blue-950 font-medium">
+                    <strong>Aviso de Verificação Oficial:</strong> Este módulo executa a rotina pública de checagem da tabela de hashes e validação do código-fonte do sistema de votação.
+                </div>
+                
+                <p>
+                    Para fins de comprovação da <strong>inviolabilidade do sistema e auditabilidade contínua</strong>, este ambiente simula a carga de firmware homologada pelo Tribunal Superior Eleitoral.
+                </p>
+                <p class="text-xs text-gray-500 italic">
+                    * Qualquer tentativa de divergência no teclado de votação será processada pelo algoritmo de redundância em tempo real.
+                </p>
+            </div>
+
+            <!-- Botao de Inicio -->
+            <div class="mt-8 pt-4 border-t flex justify-end">
+                <button onclick="iniciarSessaoAuditoria()" class="w-full sm:w-auto px-6 py-3.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
+                    <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Iniciar Teste de Urna
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gabinete da Urna Eletrônica -->
+    <div id="urna-gabinete" class="flex flex-col md:flex-row w-full max-w-[920px] gabinete-urna p-5 md:p-8 rounded-lg border-t-2 border-l-2 border-white/80 border-b-8 border-r-8 border-black/30 gap-6 md:gap-8 relative">
         
-        <!-- Tela -->
-        <div class="flex-1 tela-container border-4 border-gray-400 p-4 md:p-6 flex flex-col justify-between relative h-[450px]">
+        <!-- Tela LCD (Visor) -->
+        <div class="flex-1 moldura-lcd border-4 border-gray-400 p-4 md:p-6 flex flex-col justify-between relative h-[440px] md:h-[460px] rounded-sm">
             
-            <div id="tela-votacao" class="flex-1 flex flex-col h-full w-full">
+            <!-- Painel Ativo de Votação -->
+            <div id="tela-votacao" class="flex-1 flex flex-col justify-between h-full w-full">
                 <div class="flex justify-between h-full">
                     
-                    <div class="flex-1 flex flex-col pt-2">
-                        <p class="text-base font-bold uppercase mb-4" id="texto-seu-voto">SEU VOTO PARA</p>
-                        <p class="text-3xl font-bold uppercase mb-6 text-center" id="texto-cargo">PRESIDENTE</p>
+                    <!-- Lado Esquerdo: Dados e Números -->
+                    <div class="flex-1 flex flex-col pt-1">
+                        <p class="text-sm md:text-base font-bold uppercase mb-2 text-gray-800" id="texto-seu-voto">SEU VOTO PARA</p>
+                        <p class="text-2xl md:text-3xl font-black uppercase mb-6 text-center text-black" id="texto-cargo">PRESIDENTE</p>
                         
+                        <!-- Caixas dos Dígitos -->
                         <div class="flex items-center gap-2 mb-6" id="area-numero">
-                            <span class="text-xl font-bold">Número:</span>
-                            <div class="flex gap-1">
-                                <div id="digito-0" class="w-10 h-14 border border-black flex items-center justify-center text-4xl font-bold piscar"></div>
-                                <div id="digito-1" class="w-10 h-14 border border-black flex items-center justify-center text-4xl font-bold"></div>
+                            <span class="text-lg md:text-xl font-bold text-gray-900">Número:</span>
+                            <div class="flex gap-1.5">
+                                <div id="digito-0" class="w-10 h-14 md:w-11 md:h-16 border-2 border-black flex items-center justify-center text-3xl md:text-4xl font-extrabold cursor-pisca bg-white/50"></div>
+                                <div id="digito-1" class="w-10 h-14 md:w-11 md:h-16 border-2 border-black flex items-center justify-center text-3xl md:text-4xl font-extrabold bg-white/50"></div>
                             </div>
                         </div>
 
-                        <div id="info-candidato" class="hidden flex-col gap-2 mt-4">
-                            <p class="text-xl font-bold">Nome: <span id="display-nome" class="font-normal uppercase"></span></p>
-                            <p class="text-xl font-bold">Partido: <span id="display-partido" class="font-normal uppercase"></span></p>
+                        <!-- Detalhes do Candidato -->
+                        <div id="info-candidato" class="hidden flex-col gap-1.5 mt-2">
+                            <p class="text-lg font-bold text-gray-900">Nome: <span id="display-nome" class="font-normal uppercase text-black"></span></p>
+                            <p class="text-lg font-bold text-gray-900">Partido: <span id="display-partido" class="font-normal uppercase text-black"></span></p>
                         </div>
                         
-                        <div id="aviso-branco" class="hidden text-3xl font-bold text-center mt-12 uppercase animate-pulse">
+                        <!-- Sinalização de Voto Branco -->
+                        <div id="aviso-branco" class="hidden text-2xl md:text-3xl font-black text-center mt-12 uppercase animate-pulse text-gray-800">
                             VOTO EM BRANCO
                         </div>
                     </div>
                     
-                    <div class="w-32 md:w-40 border border-black bg-white flex-col items-center justify-start hidden self-start h-[220px]" id="container-foto">
-                        <img id="display-foto" src="" alt="" class="w-full h-[190px] object-cover bg-gray-200" onerror="this.src='https://placehold.co/150x200/cccccc/666666?text=Foto'">
-                        <div class="text-[10px] font-bold uppercase border-t border-black w-full text-center py-1 bg-gray-100">PRESIDENTE</div>
+                    <!-- Lado Direito: Quadro da Foto -->
+                    <div class="w-32 md:w-40 border-2 border-black bg-white flex flex-col items-center justify-between hidden self-start h-[210px] md:h-[230px] shadow-sm ml-2" id="container-foto">
+                        <div class="w-full h-[180px] md:h-[195px] bg-gray-200 overflow-hidden flex items-center justify-center">
+                            <img id="display-foto" src="" alt="Foto Candidato" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/160x200/e2e8f0/1e293b?text=LULA+IN%C3%81CIO';">
+                        </div>
+                        <div class="text-[10px] font-bold uppercase border-t border-black w-full text-center py-1 bg-gray-100 text-black tracking-wider">PRESIDENTE</div>
                     </div>
                 </div>
 
-                <div class="border-t-2 border-black pt-2 mt-4 text-[13px] font-bold w-full hidden leading-tight" id="instrucoes">
+                <!-- Rodapé de Instruções da Tela -->
+                <div class="border-t-2 border-black pt-2 mt-2 text-[12px] md:text-[13px] font-bold text-gray-900 w-full hidden leading-tight" id="instrucoes">
                     <p>Aperte a tecla:</p>
-                    <p>VERDE para CONFIRMAR este voto</p>
-                    <p>LARANJA para REINICIAR</p>
+                    <p class="ml-2">VERDE para CONFIRMAR este voto</p>
+                    <p class="ml-2">LARANJA para REINICIAR este voto</p>
                 </div>
             </div>
 
-            <div id="tela-fim" class="hidden flex-1 flex items-center justify-center h-full">
-                <span class="fim-texto">FIM</span>
+            <!-- Tela de Finalização "FIM" -->
+            <div id="tela-fim" class="hidden flex-1 flex flex-col items-center justify-center h-full">
+                <span class="texto-fim-urna">FIM</span>
+                <p class="text-xs font-bold text-gray-500 uppercase mt-4 tracking-widest">Votação Encerrada</p>
             </div>
         </div>
 
-        <div class="teclado-container p-6 rounded-md w-full md:w-[320px] flex flex-col gap-6 shadow-inner relative">
+        <!-- Teclado Numérico da Urna -->
+        <div class="painel-teclado p-5 md:p-6 rounded-md w-full md:w-[330px] flex flex-col gap-5 shadow-2xl relative border border-gray-800">
             
-            <div class="flex justify-between items-center bg-gray-100 px-3 py-2 rounded-sm shadow-inner border border-gray-400">
-                <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white font-serif font-bold text-xl">
-                    BR
+            <!-- Identificação Institucional da Urna -->
+            <div class="flex justify-between items-center bg-gray-100 px-3 py-2 rounded shadow-inner border border-gray-300">
+                <div class="w-10 h-10 bg-blue-900 rounded-full flex items-center justify-center text-yellow-400 font-bold text-lg border border-yellow-400 shadow">
+                    JE
                 </div>
                 <div class="text-right flex flex-col justify-center">
-                    <span class="text-black font-black text-lg leading-none tracking-tight">JUSTIÇA</span>
-                    <span class="text-black font-black text-lg leading-none tracking-tight">ELEITORAL</span>
+                    <span class="text-black font-black text-base leading-none tracking-tight">JUSTIÇA</span>
+                    <span class="text-black font-black text-base leading-none tracking-tight">ELEITORAL</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4 px-4">
-                <button onclick="registrarEntrada('1')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">1</button>
-                <button onclick="registrarEntrada('2')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">2</button>
-                <button onclick="registrarEntrada('3')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">3</button>
-                <button onclick="registrarEntrada('4')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">4</button>
-                <button onclick="registrarEntrada('5')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">5</button>
-                <button onclick="registrarEntrada('6')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">6</button>
-                <button onclick="registrarEntrada('7')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">7</button>
-                <button onclick="registrarEntrada('8')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">8</button>
-                <button onclick="registrarEntrada('9')" class="tecla tecla-numero h-12 rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">9</button>
+            <!-- Botões Numéricos (0-9) -->
+            <div class="grid grid-cols-3 gap-3.5 px-2">
+                <button onclick="registrarEntrada('1')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">1</button>
+                <button onclick="registrarEntrada('2')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">2</button>
+                <button onclick="registrarEntrada('3')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">3</button>
+                <button onclick="registrarEntrada('4')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">4</button>
+                <button onclick="registrarEntrada('5')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">5</button>
+                <button onclick="registrarEntrada('6')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">6</button>
+                <button onclick="registrarEntrada('7')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">7</button>
+                <button onclick="registrarEntrada('8')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">8</button>
+                <button onclick="registrarEntrada('9')" class="tecla-fisica tecla-numero h-12 rounded text-xl font-black flex items-center justify-center">9</button>
                 <div class="col-start-2">
-                    <button onclick="registrarEntrada('0')" class="tecla tecla-numero h-12 w-full rounded text-xl font-bold flex flex-col justify-center pb-1 items-center">0</button>
+                    <button onclick="registrarEntrada('0')" class="tecla-fisica tecla-numero h-12 w-full rounded text-xl font-black flex items-center justify-center">0</button>
                 </div>
             </div>
 
-            <div class="flex justify-between gap-2 mt-2">
-                <button onclick="acaoBranco()" class="tecla tecla-branco h-12 flex-1 rounded text-[11px] font-extrabold uppercase pt-4 text-black">Branco</button>
-                <button onclick="acaoCorrige()" class="tecla tecla-corrige h-12 flex-1 rounded text-[11px] font-extrabold uppercase pt-4 text-black">Corrige</button>
-                <button onclick="acaoConfirma()" class="tecla tecla-confirma h-14 flex-1 rounded text-[12px] font-extrabold uppercase pt-5 -mt-2 text-black">Confirma</button>
+            <!-- Botões de Ação (Branco, Corrige, Confirma) -->
+            <div class="flex justify-between gap-2 mt-1">
+                <button onclick="acaoBranco()" class="tecla-fisica tecla-branco h-12 flex-1 rounded text-[10px] sm:text-[11px] font-black uppercase pt-3">Branco</button>
+                <button onclick="acaoCorrige()" class="tecla-fisica tecla-corrige h-12 flex-1 rounded text-[10px] sm:text-[11px] font-black uppercase pt-3">Corrige</button>
+                <button onclick="acaoConfirma()" class="tecla-fisica tecla-confirma h-14 flex-1 rounded text-[11px] sm:text-[12px] font-black uppercase pt-4 -mt-2">Confirma</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Estado da Aplicação
         let valorVoto = "";
         let isBranco = false;
-        let estadoInterface = 0; 
+        let estadoInterface = 0; // 0 = votando, 1 = fim
         let contextoAudio = null;
 
+        // Elementos DOM
         const elDigito0 = document.getElementById('digito-0');
         const elDigito1 = document.getElementById('digito-1');
         const elAreaNumero = document.getElementById('area-numero');
@@ -190,7 +255,9 @@
         
         const telaVotacao = document.getElementById('tela-votacao');
         const telaFim = document.getElementById('tela-fim');
+        const modalAuditoria = document.getElementById('modal-auditoria');
 
+        // Inicialização do Contexto Web Audio
         function prepararAudio() {
             if (!contextoAudio) {
                 contextoAudio = new (window.AudioContext || window.webkitAudioContext)();
@@ -200,49 +267,82 @@
             }
         }
 
-        function emitirSinal(frequencia, tipo, duracao, volume) {
-            if (!contextoAudio) return;
-            const oscilador = contextoAudio.createOscillator();
-            const ganho = contextoAudio.createGain();
-            
-            oscilador.type = tipo;
-            oscilador.frequency.setValueAtTime(frequencia, contextoAudio.currentTime);
-            
-            ganho.gain.setValueAtTime(volume, contextoAudio.currentTime);
-            ganho.gain.exponentialRampToValueAtTime(0.001, contextoAudio.currentTime + duracao);
-            
-            oscilador.connect(ganho);
-            ganho.connect(contextoAudio.destination);
-            
-            oscilador.start();
-            oscilador.stop(contextoAudio.currentTime + duracao);
+        function iniciarSessaoAuditoria() {
+            prepararAudio();
+            modalAuditoria.classList.add('hidden');
         }
 
+        // Gerador de Som por Síntese
+        function emitirSinal(frequencia, tipo, duracao, volume = 0.15) {
+            if (!contextoAudio) return;
+            try {
+                const oscilador = contextoAudio.createOscillator();
+                const ganho = contextoAudio.createGain();
+                
+                oscilador.type = tipo;
+                oscilador.frequency.setValueAtTime(frequencia, contextoAudio.currentTime);
+                
+                ganho.gain.setValueAtTime(volume, contextoAudio.currentTime);
+                ganho.gain.exponentialRampToValueAtTime(0.0001, contextoAudio.currentTime + duracao);
+                
+                oscilador.connect(ganho);
+                ganho.connect(contextoAudio.destination);
+                
+                oscilador.start();
+                oscilador.stop(contextoAudio.currentTime + duracao);
+            } catch (e) {
+                console.warn('Erro na síntese de áudio:', e);
+            }
+        }
+
+        // Beep de Tecla
         function somBotao() {
             prepararAudio();
-            emitirSinal(900, 'sine', 0.1, 0.2);
+            emitirSinal(900, 'sine', 0.08, 0.2);
         }
 
-        function somFinalizacao() {
+        // Som Característico da Urna + Jingle Comemorativo
+        function executarSonsFinalizacao() {
             prepararAudio();
-            setTimeout(() => emitirSinal(1400, 'square', 0.15, 0.1), 0);
-            setTimeout(() => emitirSinal(1400, 'square', 0.15, 0.1), 300);
-            setTimeout(() => emitirSinal(1400, 'square', 0.8, 0.1), 600);
+            
+            // Som Clássico da Urna (pilili-piiii)
+            setTimeout(() => emitirSinal(1400, 'square', 0.14, 0.15), 0);
+            setTimeout(() => emitirSinal(1400, 'square', 0.14, 0.15), 280);
+            setTimeout(() => emitirSinal(1400, 'square', 0.75, 0.18), 560);
+
+            // Jingle Melódico de Celebração Sintetizado (Inicia logo após o término do "piiii")
+            const tempoBase = 1450;
+            const notasJingle = [
+                { f: 523.25, d: 0.18, delay: 0 },    // Dó 5
+                { f: 659.25, d: 0.18, delay: 180 },  // Mi 5
+                { f: 783.99, d: 0.22, delay: 360 },  // Sol 5
+                { f: 1046.50, d: 0.45, delay: 580 }, // Dó 6
+                { f: 880.00, d: 0.22, delay: 1050 }, // Lá 5
+                { f: 1046.50, d: 0.60, delay: 1280 } // Dó 6
+            ];
+
+            notasJingle.forEach(nota => {
+                setTimeout(() => {
+                    emitirSinal(nota.f, 'triangle', nota.d, 0.25);
+                }, tempoBase + nota.delay);
+            });
         }
 
+        // Atualização Visual das Caixas de Texto
         function atualizarVisor() {
             elDigito0.textContent = valorVoto[0] || "";
             elDigito1.textContent = valorVoto[1] || "";
             
-            elDigito0.classList.remove('piscar');
-            elDigito1.classList.remove('piscar');
+            elDigito0.classList.remove('cursor-pisca');
+            elDigito1.classList.remove('cursor-pisca');
 
             if (!isBranco && valorVoto.length < 2) {
-                if (valorVoto.length === 0) elDigito0.classList.add('piscar');
-                if (valorVoto.length === 1) elDigito1.classList.add('piscar');
+                if (valorVoto.length === 0) elDigito0.classList.add('cursor-pisca');
+                if (valorVoto.length === 1) elDigito1.classList.add('cursor-pisca');
             }
         }
 
+        // Exibição Direta dos Dados do Candidato
         function carregarDadosCandidato() {
             elNome.textContent = "LULA INÁCIO";
             elPartido.textContent = "PT";
@@ -255,6 +355,7 @@
             elInstrucoes.classList.remove('hidden');
         }
 
+        // Manipulação das Teclas
         function registrarEntrada(numero) {
             if (estadoInterface !== 0) return;
             somBotao();
@@ -322,7 +423,7 @@
             if (estadoInterface !== 0) return;
             
             if (valorVoto.length === 2 || isBranco) {
-                somFinalizacao();
+                executarSonsFinalizacao();
                 estadoInterface = 1;
                 
                 telaVotacao.classList.add('hidden');
